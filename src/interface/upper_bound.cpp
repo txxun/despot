@@ -32,7 +32,7 @@ ParticleUpperBound::~ParticleUpperBound() {
 double ParticleUpperBound::Value(const vector<State*>& particles,
 	RandomStreams& streams, History& history) const {
 	double value = 0;
-	for (int i = 0; i < particles.size(); i++) {
+	for (size_t i = 0; i < particles.size(); i++) {
 		State* particle = particles[i];
 		value += particle->weight * Value(*particle);
 	}

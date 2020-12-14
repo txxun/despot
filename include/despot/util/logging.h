@@ -4,6 +4,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <glog/logging.h>
+
 
 namespace despot {
 
@@ -39,7 +41,7 @@ private:
 	static const std::string markers_[];
 
 public:
-	static const int NONE, ERROR, WARN, INFO, DEBUG, VERBOSE;
+	static const int NONE, ERROR, WARN, INFO, DEBUG, VERBOSELY;
 
 public:
 	static void level(int verbosity);
@@ -50,15 +52,15 @@ public:
 
 } // namespace despot
 
-#define LOG(lv) \
-if (despot::logging::level() < despot::logging::ERROR || despot::logging::level() < lv) ; \
-else despot::logging::stream(lv)
+// #define LOG(lv) \
+// if (despot::logging::level() < despot::logging::ERROR || despot::logging::level() < lv) ; \
+// else despot::logging::stream(lv)
 
-#define loge LOG(despot::logging::ERROR)
-#define logw LOG(despot::logging::WARN)
-#define logi LOG(despot::logging::INFO)
-#define logd LOG(despot::logging::DEBUG)
-#define logv LOG(despot::logging::VERBOSE)
+#define loge LOG(ERROR)
+#define logw LOG(ERROR)
+#define logi LOG(ERROR)
+#define logd LOG(ERROR)
+#define logv LOG(ERROR)
 
 #define default_out \
 if (Globals::config.silence) ; \

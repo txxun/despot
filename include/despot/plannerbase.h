@@ -158,7 +158,7 @@ public:
 	 * @param options    Parsed command line options
 	 */
 	virtual World* InitializeWorld(std::string& world_type, DSPOMDP *model,
-			option::Option* options)=0;
+			option::Option* options);
 
 	/**
 	 * [Essential]
@@ -170,7 +170,9 @@ public:
 	 * [Essential]
 	 * Return the name of the intended solver ("DESPOT", "AEMS2", "POMCP", "DPOMCP", "PLB", "BLB")
 	 */
-	virtual std::string ChooseSolver()=0;
+	virtual std::string ChooseSolver() {
+		return "DESPOT";
+	};
 
 	/**
 	 * Initialize a DSPOMDP model-based world

@@ -22,13 +22,13 @@ DefaultPolicy::~DefaultPolicy() {
 ValuedAction DefaultPolicy::Value(const vector<State*>& particles,
 	RandomStreams& streams, History& history) const {
 	vector<State*> copy;
-	for (int i = 0; i < particles.size(); i++)
+	for (size_t i = 0; i < particles.size(); i++)
 		copy.push_back(model_->Copy(particles[i]));
 
 	initial_depth_ = history.Size();
 	ValuedAction va = RecursiveValue(copy, streams, history);
 
-	for (int i = 0; i < copy.size(); i++)
+	for (size_t i = 0; i < copy.size(); i++)
 		model_->Free(copy[i]);
 
 	return va;
@@ -37,7 +37,7 @@ ValuedAction DefaultPolicy::Value(const vector<State*>& particles,
 ValuedAction DefaultPolicy::RecursiveValue(const vector<State*>& particles,
 	RandomStreams& streams, History& history) const {
 	if (streams.Exhausted()
-		|| (history.Size() - initial_depth_
+		|| (int(history.Size()) - initial_depth_
 			>= Globals::config.max_policy_sim_len)) {
 		return particle_lower_bound_->Value(particles);
 	} else {
@@ -48,7 +48,7 @@ ValuedAction DefaultPolicy::RecursiveValue(const vector<State*>& particles,
 		map<OBS_TYPE, vector<State*> > partitions;
 		OBS_TYPE obs;
 		double reward;
-		for (int i = 0; i < particles.size(); i++) {
+		for (size_t i = 0; i < particles.size(); i++) {
 			State* particle = particles[i];
 			bool terminal = model_->Step(*particle,
 				streams.Entry(particle->scenario_id), action, reward, obs);

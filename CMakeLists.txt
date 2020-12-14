@@ -1,6 +1,29 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(despot)
 
+# plusai cmake module path
+set(PLUSAI_CMAKE_MODULE_PATH "/opt/plusai/var/cmake/Modules" CACHE PATH "")
+# cmake module path
+list(APPEND CMAKE_MODULE_PATH ${PLUSAI_CMAKE_MODULE_PATH})
+message(STATUS "CMAKE_MODULE_PATH: ${CMAKE_MODULE_PATH}")
+# # include plusai_util.cmake
+# include(${PLUSAI_CMAKE_MODULE_PATH}/plusai_util.cmake RESULT_VARIABLE PLUSAI_UTIL_CMAKE)
+# if ("${PLUSAI_UTIL_CMAKE}" STREQUAL "NOTFOUND")
+#     message(FATAL_ERROR "Unable to load plusai util cmake")
+# endif()
+
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+
+set(CMAKE_CONFIG_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CONFIG_PATH}")
+
+# GLog
+list(APPEND CMAKE_PREFIX_PATH "/opt/plusai/var/cmake")
+find_package(Glog REQUIRED)
+include_directories(${GLOG_INCLUDE_DIRS})
+message(STATUS "GLOG_INCLUDE_DIRS: ${GLOG_INCLUDE_DIRS}")
+message(STATUS "GLOG_LIBRARIES: ${GLOG_LIBRARIES}")
+
 set(BINARY_INSTALL_PATH "bin" CACHE PATH "Binary install path")
 set(LIBRARY_INSTALL_PATH "lib" CACHE PATH "Library install path")
 set(INCLUDE_INSTALL_PATH "include" CACHE PATH "Include install path")
@@ -59,6 +82,7 @@ add_library("${PROJECT_NAME}" SHARED
 )
 target_link_libraries("${PROJECT_NAME}"
   ${TinyXML_LIBRARIES}
+  ${GLOG_LIBRARIES}
 )
 
 # Build example files

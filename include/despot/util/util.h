@@ -117,7 +117,7 @@ inline double get_time_second() {
 inline std::string lower(std::string str) {
   std::locale loc;
 	std::string copy = str;
-	for (int i = 0; i < copy.length(); i++)
+	for (size_t i = 0; i < copy.length(); i++)
 		copy[i] = std::tolower(copy[i], loc);
 	return copy;
 }

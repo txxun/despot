@@ -43,6 +43,7 @@ VNode* DESPOT::Trial(VNode* root, RandomStreams& streams,
 		ExploitBlockers(cur);
 
 		if (Gap(cur) == 0) {
+			logd << "Gap(cur) == 0";
 			break;
 		}
 
@@ -67,11 +68,16 @@ VNode* DESPOT::Trial(VNode* root, RandomStreams& streams,
 		}
 
 		if (next == NULL) {
+			logd << "next == NULL";
 			break;
 		}
 
 		cur = next;
 		history.Add(qstar->edge(), cur->edge());
+		logd << "cur->depth(): " << cur->depth()
+				<< ", Globals::config.search_depth: " << Globals::config.search_depth
+				<< ", cur->IsLeaf(): " << cur->IsLeaf()
+				<< ", WEU(cur): " << WEU(cur);
 	} while (cur->depth() < Globals::config.search_depth && WEU(cur) > 0);
 
 	history.Truncate(hist_size);
@@ -130,6 +136,7 @@ VNode* DESPOT::ConstructTree(vector<State*>& particles, RandomStreams& streams,
 
 	for (int i = 0; i < particles.size(); i++) {
 		particles[i]->scenario_id = i;
+		logd << *particles[i] << endl;
 	}
 
 	VNode* root = new VNode(particles);
@@ -490,6 +497,7 @@ double DESPOT::WEU(VNode* vnode, double xi) {
 	while (root->parent() != NULL) {
 		root = root->parent()->parent();
 	}
+	logd << "Gap(vnode): " << Gap(vnode) << ", Gap(root): " << Gap(root);
 	return Gap(vnode) - xi * vnode->Weight() * Gap(root);
 }
 
@@ -502,6 +510,7 @@ VNode* DESPOT::SelectBestWEUNode(QNode* qnode) {
 		VNode* vnode = it->second;
 
 		double weu = WEU(vnode);
+		logd << "weu: " << weu << ", weustar: " << weustar;
 		if (weu >= weustar) {
 			weustar = weu;
 			vstar = vnode->vstar;
@@ -626,9 +635,13 @@ void DESPOT::Expand(VNode* vnode,
 	const DSPOMDP* model, RandomStreams& streams,
 	History& history) {
 	vector<QNode*>& children = vnode->children();
-	logd << "- Expanding vnode " << vnode << endl;
+	logd << "- Expanding vnode " << vnode 
+			<< ", *vnode->particles().front(): " << *vnode->particles().front()
+			<< endl;
 	for (ACT_TYPE action = 0; action < model->NumActions(); action++) {
-		logd << " Action " << action << endl;
+		logd << " Action " << action 
+				<< ", *vnode->particles().front(): " << *vnode->particles().front()
+				<< endl;
 		QNode* qnode = new QNode(vnode, action);
 		children.push_back(qnode);
 
@@ -655,19 +668,24 @@ void DESPOT::Expand(QNode* qnode, ScenarioLowerBound* lb,
 	double reward;
 	for (int i = 0; i < particles.size(); i++) {
 		State* particle = particles[i];
-		logd << " Original: " << *particle << endl;
+		logd << " Original: " << *particle << ", i: " << i
+				 << ", particles.size(): " << particles.size() << endl;
 
 		State* copy = model->Copy(particle);
 
-		logd << " Before step: " << *copy << endl;
+		logd << " Before step: *copy: " << *copy 
+				<< ", *particle: " << *particle
+				<< endl;
 
 		bool terminal = model->Step(*copy, streams.Entry(copy->scenario_id),
 			qnode->edge(), reward, obs);
 
 		step_reward += reward * copy->weight;
 
-		logd << " After step: " << *copy << " " << (reward * copy->weight)
-			<< " " << reward << " " << copy->weight << endl;
+		logd << " After step: *copy: " << *copy << ", reward * copy->weight: " << (reward * copy->weight)
+			<< ", reward: " << reward << ", copy->weight: " << copy->weight 
+			<< ", *particle: " << *particle
+			<< endl;
 
 		if (!terminal) {
 			partitions[obs].push_back(copy);
